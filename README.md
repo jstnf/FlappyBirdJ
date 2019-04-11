@@ -1,4 +1,4 @@
-# flappybirdj
-Recreation of the game Flappy Bird in Java. 
-Includes physics, sound effects, graphics. 
-Missing some functions. 
+# FlappyBirdJ
+#### Recreation of the game Flappy Bird in Java. 
+<br>Includes physics, sound effects, graphics, and a score counter. 
+<br>Missing some functions.
