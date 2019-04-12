@@ -1,15 +1,17 @@
-package com.jstnf.flappybirdj.main;
+package com.jstnf.flappybirdj.objects;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import com.jstnf.flappybirdj.main.Entity;
 
-public abstract class GameObject {
+import java.awt.*;
 
+public abstract class GameObject
+{
 	protected final int WINDOW_WIDTH = 400, WINDOW_HEIGHT = 600;
 	protected int x, y;
 	protected Entity id;
 
-	public GameObject(int x, int y, Entity id) {
+	public GameObject(int x, int y, Entity id)
+	{
 		this.x = x;
 		this.y = y;
 		this.id = id;
@@ -20,28 +22,33 @@ public abstract class GameObject {
 	public abstract void render(Graphics g, Graphics2D g2d);
 
 	// Getters/Setters
-	public int getX() {
+	public int getX()
+	{
 		return x;
 	}
 
-	public void setX(int x) {
+	public void setX(int x)
+	{
 		this.x = x;
 	}
 
-	public int getY() {
+	public int getY()
+	{
 		return y;
 	}
 
-	public void setY(int y) {
+	public void setY(int y)
+	{
 		this.y = y;
 	}
 
-	public void setId(Entity id) {
+	public void setId(Entity id)
+	{
 		this.id = id;
 	}
 
-	public Entity getId() {
+	public Entity getId()
+	{
 		return id;
 	}
-
 }

@@ -25,6 +25,7 @@
 /bin
 /dist
 /manifest.mf
+out/
 
 /world
 
