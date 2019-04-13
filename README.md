@@ -4,10 +4,8 @@
 
 Controls
 ---
-| Key | Function |
-| ----- | ----- |
-| SPACEBAR | Jump |
-| R | Restart the game (after death) |
+* **Spacebar** - Jump
+* **R** - Restart the game (ater death)
 
 Development and Bugs
 ---
