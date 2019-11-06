@@ -4,145 +4,159 @@ import com.jstnf.flappybirdj.objects.Bird;
 import com.jstnf.flappybirdj.objects.GameObject;
 import com.jstnf.flappybirdj.objects.Pipe;
 
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.LinkedList;
 
 public class Handler
 {
-	LinkedList<GameObject> object = new LinkedList<GameObject>();
-	protected int pipeTimer, defaultPipeSpeed;
-	public FlappyBird game;
-	private boolean deathSoundPlayed;
+    private FlappyBird game;
+    private LinkedList<GameObject> objects = new LinkedList<>();
+    private int pipeTimer;
+    private int pipeSpeed;
+    private boolean deathSoundPlayed;
 
-	public Handler(FlappyBird game)
-	{
-		pipeTimer = 0;
-		deathSoundPlayed = false;
-		this.game = game;
-		defaultPipeSpeed = 3;
-	}
+    public Handler(FlappyBird game)
+    {
+        pipeTimer = 0;
+        deathSoundPlayed = false;
+        this.game = game;
+        pipeSpeed = 3;
+    }
 
-	public void tick()
-	{
-		for (int i = 0; i < object.size(); i++)
-		{
-			GameObject obj = object.get(i);
-			obj.tick();
+    public void tick()
+    {
+        for (int i = 0; i < objects.size(); i++)
+        {
+            GameObject obj = objects.get(i);
+            obj.tick();
 
-			if (obj.getId() == Entity.BIRD)
-			{
-				if (((Bird) obj).onTheGround())
-				{
-					obj.setY(((Bird) obj).getLOWER_LIM());
-					kill();
-				}
-			}
+            if (obj instanceof Bird)
+            {
+                Bird bird = (Bird) obj;
+                if (bird.onTheGround())
+                {
+                    obj.setY(bird.getLOWER_LIM());
+                    kill();
+                }
+            }
 
-			if (game.getState() == 2)
-			{
-				if (obj.getId() == Entity.PIPE)
-				{
-					if (((Pipe) obj).isWithinBird())
-					{
-						if (game.getPlayer().isColliding((Pipe) obj))
-						{
-							kill();
-						}
-						if (game.getPlayer().checkScore((Pipe) obj))
-						{
-							game.setScore(game.getScore() + 1);
-							Assets.playSound(Assets.point);
-						}
-					}
+            if (game.getState() == 2)
+            {
+                if (obj instanceof Pipe)
+                {
+                    Pipe pipe = (Pipe) obj;
 
-					if (((Pipe) obj).isOffscreen())
-					{
-						removeObject(obj);
-						i--;
-					}
-				}
-			}
-		}
+                    if (pipe.isWithinBird())
+                    {
+                        if (game.getPlayer().isColliding(pipe))
+                        {
+                            kill();
+                        }
+                        if (game.getPlayer().checkScore(pipe))
+                        {
+                            game.setScore(game.getScore() + 1);
+                            Assets.playSound(Assets.SoundEffect.POINT);
+                        }
+                    }
 
-		if (game.getState() == 2)
-		{
-			pipeTimer++;
-			if (spawnPipe(pipeTimer))
-			{
-				pipeTimer = 0;
-			}
-		}
+                    if (pipe.isOffscreen())
+                    {
+                        removeObject(obj);
+                        i--;
+                    }
+                }
+            }
+        }
 
-		/* Prints number of objects loaded. */
-		// System.out.println(object.size());
-	}
+        if (game.getState() == 2)
+        {
+            pipeTimer++;
+            if (spawnPipe(pipeTimer))
+            {
+                pipeTimer = 0;
+            }
+        }
+    }
 
-	public void render(Graphics g, Graphics2D g2d)
-	{
-		for (int i = object.size() - 1; i > -1; i--)
-		{
-			GameObject obj = object.get(i);
-			obj.render(g, g2d);
-		}
-	}
+    public void render(Graphics g, Graphics2D g2d)
+    {
+        for (int i = objects.size() - 1; i > -1; i--)
+        {
+            GameObject obj = objects.get(i);
+            obj.render(g, g2d);
+        }
+    }
 
-	public void addObject(GameObject object)
-	{
-		this.object.add(object);
-	}
+    public void addObject(GameObject object)
+    {
+        objects.add(object);
+    }
 
-	public void removeObject(GameObject object)
-	{
-		this.object.remove(object);
-	}
+    public void removeObject(GameObject object)
+    {
+        objects.remove(object);
+    }
 
-	private boolean spawnPipe(int pipeTimer)
-	{
-		if (pipeTimer > 80)
-		{
-			addObject(new Pipe(400, 50 + (int) (215 * Math.random()), Entity.PIPE, defaultPipeSpeed));
-			return true;
-		}
-		return false;
-	}
+    private boolean spawnPipe(int pipeTimer)
+    {
+        if (pipeTimer > 80)
+        {
+            addObject(new Pipe(400, 50 + (int) (215 * Math.random()), pipeSpeed));
+            return true;
+        }
+        return false;
+    }
 
-	private void kill()
-	{
-		game.setState(0);
-		if (!deathSoundPlayed)
-		{
-			deathSoundPlayed = true;
-			Assets.playSound(Assets.hit);
-			Assets.playSound(Assets.die);
-		}
-		for (int i = object.size() - 1; i > -1; i--)
-		{
-			if (object.get(i).getId() == Entity.PIPE)
-			{
-				((Pipe) object.get(i)).stopFunction();
-			}
-		}
-	}
+    private void kill()
+    {
+        game.setState(0);
+        if (!deathSoundPlayed)
+        {
+            deathSoundPlayed = true;
+            Assets.playSound(Assets.SoundEffect.HIT);
+            Assets.playSound(Assets.SoundEffect.DIE);
+        }
+        for (int i = objects.size() - 1; i > -1; i--)
+        {
+            if (objects.get(i) instanceof Pipe)
+            {
+                Pipe pipe = (Pipe) objects.get(i);
+                pipe.stopFunction();
+            }
+        }
+    }
 
-	public void reset()
-	{
-		deathSoundPlayed = false;
-		for (int i = object.size() - 1; i > -1; i--)
-		{
-			if (object.get(i).getId() == Entity.PIPE)
-			{
-				object.remove(i);
-			}
-		}
-	}
+    public void reset()
+    {
+        deathSoundPlayed = false;
+        for (int i = objects.size() - 1; i > -1; i--)
+        {
+            if (objects.get(i) instanceof Pipe)
+            {
+                objects.remove(i);
+            }
+        }
+    }
 
-	public int getSpeed()
-	{
-		return defaultPipeSpeed;
-	}
+    /* ----- GETTERS / SETTERS ----- */
+    public FlappyBird getGame()
+    {
+        return game;
+    }
 
-	public void setSpeed(int speed)
-	{
-		defaultPipeSpeed = speed;
-	}
+    public int getSpeed()
+    {
+        return pipeSpeed;
+    }
+
+    public void setSpeed(int speed)
+    {
+        pipeSpeed = speed;
+    }
+
+    public LinkedList<GameObject> getObjects()
+    {
+        return objects;
+    }
 }
